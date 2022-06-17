@@ -29,7 +29,7 @@ const Example = () => {
 
     return (<>
             {messeges.map(el => {
-                return <>{el}<br></br></>
+                return <>{el}<br> </br></>
             })
             }
         </>
