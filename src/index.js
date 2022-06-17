@@ -3,6 +3,10 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
+const config = {
+    clientKey: "e07a1de7d158f0f09e94",
+    cluster: "ap2",
+};
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
