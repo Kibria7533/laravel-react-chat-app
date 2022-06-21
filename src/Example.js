@@ -1,9 +1,9 @@
 import React, {useEffect} from 'react';
 import {useChannel, useEvent} from "@harelpls/use-pusher";
-import {useState} from "react";
 import {setPusherClient} from 'react-pusher';
 import Pusher from 'pusher-js';
 import Echo from 'laravel-echo'
+import {useState} from "react";
 
 window.Echo = new Echo({
     broadcaster: 'pusher',

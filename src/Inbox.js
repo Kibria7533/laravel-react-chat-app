@@ -4,7 +4,13 @@ import axios from "axios";
 import Moment from 'react-moment';
 import {base} from "./Url";
 import Avatar from "react-avatar";
-
+import Echo from 'laravel-echo'
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: 'e07a1de7d158f0f09e94',
+    cluster: 'ap2',
+    forceTLS: true
+});
 const  Inbox=()=>{
     const[messeges,setMesseges]=useState([]);
     const[messege,setMessege]=useState('');
@@ -27,6 +33,14 @@ const  Inbox=()=>{
             setMesseges(data.data.data);
         })
     }
+
+    let channel = window.Echo.channel('messege');
+    channel.listen('MessegeEvent', function (data) {
+        console.log(data,'messeges from event');
+        let filteredMessege=data.messege.filter(el=> (el.from_contact_id ==sessionStorage.getItem('id') || el.from_contact_id == id ));
+        setMesseges(filteredMessege);
+    });
+
     const saveMesseges=async()=>{
         let messegeData={
             "from_contact_id": sessionStorage.getItem('id'),
@@ -42,7 +56,7 @@ const  Inbox=()=>{
                 'Content-Type': 'application/json'}}).then(data=>{
                     console.log(data);
                     setMessege('')
-                    getMessges();
+                    getMessges(sessionStorage.getItem('id'),id);
         })
     }
    useEffect(()=>{

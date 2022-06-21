@@ -1,6 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {PusherProvider} from "@harelpls/use-pusher";
-import Example from "./Example";
 import {BrowserRouter as Router, Route, Routes} from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Inbox from "./Inbox";
@@ -11,6 +9,16 @@ import axios from 'axios';
 import {base} from './Url';
 import Cgroup from "./Cgroup";
 import Cgchat from "./Cgchat";
+import {useChannel, useEvent} from "@harelpls/use-pusher";
+import {setPusherClient} from 'react-pusher';
+import Pusher from 'pusher-js';
+import Echo from 'laravel-echo'
+window.Echo = new Echo({
+    broadcaster: 'pusher',
+    key: 'e07a1de7d158f0f09e94',
+    cluster: 'ap2',
+    forceTLS: true
+});
 const App = () => {
 
     const [contacts,setContact]=useState([]);
@@ -47,11 +55,27 @@ const App = () => {
             setConversation(data.data.data);
         })
     }
+    let channel = window.Echo.channel('contact');
+    channel.listen('Contact', function (data) {
+        console.log(data,'contacts from event')
+        setAllContact(data.contact);
+        let id=sessionStorage.getItem('id');
+        if(id){
+            let filterd=data.contact.filter(el=>el.id!=id);
+            console.log(filterd,'loo')
+            setContact(filterd);
+            return;
+        }
+        setContact(data.contact);
+    });
+
+    let channelC = window.Echo.channel('conversation');
+    channelC.listen('ConversationEvent', function (data) {
+        console.log(data.conversation,'conversations from event')
+        let filtered=data.conversation.filter(el=>(el.contact_id==sessionStorage.getItem('id')));
+        setConversation(filtered);
+    });
     useEffect(()=>{
-        // $('#action_menu_btn').click(function(){
-        //     $('.action_menu').toggle();
-        // });
-        // let act=document.getElementById('action_menu_btn');
         getContacts();
         getConversation();
     },[])

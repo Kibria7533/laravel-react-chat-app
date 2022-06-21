@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import { useNavigate } from "react-router-dom";
+import Example from "./Example";
 const Welcome=({saveContact})=>{
     const [name,setName]=useState('');
     let navigate = useNavigate();
