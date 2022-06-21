@@ -7,7 +7,7 @@ const  InitMessegeHome=()=>{
             <div className="card" style={{textAlign: "center",justifyContent: "center"}}>
 
                 <Typical
-                    steps={['Please', 1000, 'Select One!', 500,'Two Continue!', 600]}
+                    steps={['Please', 1000, 'Select One!', 500,'To Continue!', 600]}
                     loop={Infinity}
                     wrapper="h1"
                 />

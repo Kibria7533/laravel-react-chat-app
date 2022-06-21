@@ -1,9 +1,18 @@
-import React from "react";
-import { DistortionText } from 'react-text-fun'
-import { useNavigate, useParams } from "react-router-dom";
-const Welcome=()=>{
+import React, {useEffect, useState} from "react";
+import { useNavigate } from "react-router-dom";
+const Welcome=({saveContact})=>{
+    const [name,setName]=useState('');
     let navigate = useNavigate();
+    useEffect(()=>{
+        if(sessionStorage.getItem('id')){
+            navigate("/us/init", { replace: true });
+        }else{
+            navigate("/", { replace: true });
+        }
+    },[])
+
    const  onJoin=()=>{
+       saveContact(name);
        navigate("/us/init", { replace: true });
     }
     return(
@@ -53,7 +62,7 @@ const Welcome=()=>{
                     <div className="row justify-content-center">
                         <div className="col-lg-6">
                             <form onSubmit={onJoin}>
-                                <input type="email" name="email" placeholder="Enter your Email" />
+                                <input type="text" name="nmae" placeholder="Enter your Name" onChange={(e)=>setName(e.target.value)}/>
                                 <input type="submit" value={'JOIN'} />
                             </form>
                         </div>

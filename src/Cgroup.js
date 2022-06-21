@@ -4,12 +4,16 @@ import axios from "axios";
 import Moment from 'react-moment';
 import {base} from "./Url";
 import Avatar from "react-avatar";
+import Select from 'react-select';
 
-const  Inbox=()=>{
+const  Cgroup=({contacts})=>{
     const[messeges,setMesseges]=useState([]);
     const[messege,setMessege]=useState('');
     const [title_name,setTitle] =useState('');
     const [agtoggle,setAddGT]=useState(false);
+    const [customContacts,setCustomContact]=useState([]);
+    const [selectedOption, setSelectedOption] = useState(null);
+    const [cgname,setCgName]=useState('')
     const calendarStrings = {
         lastDay : '[Yesterday at] LT',
         sameDay : '[Today at] LT',
@@ -18,11 +22,11 @@ const  Inbox=()=>{
         nextWeek : 'dddd [at] LT',
         sameElse : 'L'
     };
-
+let navigate=useNavigate();
     let {id,title}=useParams();
     console.log(id,title);
     const getMessges=async(initId,recId)=>{
-        await axios.get(`${base}/messeges/${parseInt(initId)}/${parseInt(recId)}`).then(data=>{
+        await axios.get(`${base}/messeges/${initId}/${recId}`).then(data=>{
             console.log(data.data.data);
             setMesseges(data.data.data);
         })
@@ -34,43 +38,83 @@ const  Inbox=()=>{
             "messege_text": messege,
             "contact_id":sessionStorage.getItem('id')
         }
-        console.log(messegeData);
         if(!messege){
             alert('Write something to text');
         }
         await axios.post(`${base}/messege`,messegeData,{headers: {'Accept': 'application/json',
                 'Content-Type': 'application/json'}}).then(data=>{
-                    console.log(data);
-                    setMessege('')
-                    getMessges();
+            console.log(data);
+            setMessege('')
+            getMessges();
         })
     }
-   useEffect(()=>{
-       // let objDiv = document.getElementsByClassName("msg_card_body");
-       // objDiv.scrollTop = objDiv.scrollHeight;
-       getMessges(sessionStorage.getItem('id'),id);
-       setTitle(title);
-   },[id])
+    const customizeForOption=()=>{
+        let customOption=contacts.map(el=>{
+            return{value: el.id, label: el.first_name};
+        })
+        setCustomContact(customOption)
+    }
+    useEffect(()=>{
+        // let objDiv = document.getElementsByClassName("msg_card_body");
+        // objDiv.scrollTop = objDiv.scrollHeight;
+        customizeForOption();
+        getMessges(sessionStorage.getItem('id'),id);
+        setTitle(title);
+    },[id])
+
+    const options = [
+        { value: 'chocolate', label: 'Chocolate' },
+        { value: 'strawberry', label: 'Strawberry' },
+        { value: 'vanilla', label: 'Vanilla' }
+    ]
+    const  customStyles={
+        input: () => ({
+            // none of react-select's styles are passed to <Control />
+            width: 400,
+        })
+    }
+    const saveGroup=async ()=>{
+        await  axios.post(`${base}/conversation`,{selectedOption,cgname},{headers: {'Accept': 'application/json',
+                'Content-Type': 'application/json'}}).then(data=>{
+                    console.log(data,'g create holo');
+            navigate("/us/init", { replace: true });
+        })
+    }
     return(<>
-        <div className="col-md-8 col-xl-6 chat" >
+        <div className="col-md-8 col-xl-6 chat" onClick={()=>setAddGT(false)}>
             <div className="card">
                 <div className="card-header msg_head">
-                    <div className="d-flex bd-highlight">
-                        <div className="img_cont">
-                            <Avatar   className="rounded-circle user_img" name={title_name} size="40" style={{"paddingTop":"8px"}}   maxInitials={1} round textSizeRatio={1.75} />
-                            <span className="online_icon" />
+                    <div className="d-flex">
+                        <div className="user_info">
+                            <Select
+                                defaultValue={selectedOption}
+                                placeholder={"Select Member To Add"}
+                                onChange={setSelectedOption}
+                                options={customContacts}
+                                isSearchable={true}
+                                isMulti={true}
+                                styles={customStyles}
+                            />
                         </div>
                         <div className="user_info">
-                            <span>Chat with {title_name}</span>
-                            <p>1767 Messages</p>
+                            <input
+                                placeholder={'Group Name'}
+                                value={cgname}
+                                onChange={(e)=>setCgName(e.target.value)}
+                                name={cgname}
+                                style={{width: '213px',
+                                height: '53px',
+                                border: 'aliceblue',
+                                borderRadius: '8px',
+                                background: 'C1E6c6'}}/>
                         </div>
-                        <div className="video_cam">
-                <span>
-                  <i className="fas fa-video" />
-                </span>
-                            <span>
-                  <i className="fas fa-phone" />
-                </span>
+                        <div style={{textAlign: 'center',
+                            justifyContent: 'center',
+                            display: 'flex',
+                            margin: 'auto',
+                            borderRadius: '69px'}}>
+                           <button onClick={saveGroup} style={{height: '48px',
+                               borderRadius: '17px'}}>Create</button>
                         </div>
                     </div>
                     <span id="action_menu_btn" onClick={()=>setAddGT(!agtoggle)}>
@@ -85,10 +129,7 @@ const  Inbox=()=>{
                                 <i className="fas fa-users" /> Add to close friends
                             </li>
                             <li>
-                              <i className="fas fa-plus" /> Add to group
-                            </li>
-                            <li>
-                                <Link to={"/us/group"} style={{color:'white'}}>  <i className="fas fa-plus" /> Create group</Link>
+                                <i className="fas fa-plus" /> Add to group
                             </li>
                             <li>
                                 <i className="fas fa-ban" /> Block
@@ -142,4 +183,4 @@ const  Inbox=()=>{
         </div>
     </>)
 }
-export  default  Inbox;
+export  default  Cgroup;

@@ -5,7 +5,7 @@ import Moment from 'react-moment';
 import {base} from "./Url";
 import Avatar from "react-avatar";
 
-const  Inbox=()=>{
+const  Cgchat=()=>{
     const[messeges,setMesseges]=useState([]);
     const[messege,setMessege]=useState('');
     const [title_name,setTitle] =useState('');
@@ -21,9 +21,9 @@ const  Inbox=()=>{
 
     let {id,title}=useParams();
     console.log(id,title);
-    const getMessges=async(initId,recId)=>{
-        await axios.get(`${base}/messeges/${parseInt(initId)}/${parseInt(recId)}`).then(data=>{
-            console.log(data.data.data);
+    const getGMessges=async(gid,gname)=>{
+        await axios.get(`${base}/gmesseges/${gid}/${gname}`).then(data=>{
+            console.log(data.data.data,'gmesees');
             setMesseges(data.data.data);
         })
     }
@@ -32,25 +32,26 @@ const  Inbox=()=>{
             "from_contact_id": sessionStorage.getItem('id'),
             "to_contact_id": id,
             "messege_text": messege,
+            "conversation_id":id,
             "contact_id":sessionStorage.getItem('id')
         }
-        console.log(messegeData);
         if(!messege){
             alert('Write something to text');
         }
         await axios.post(`${base}/messege`,messegeData,{headers: {'Accept': 'application/json',
                 'Content-Type': 'application/json'}}).then(data=>{
-                    console.log(data);
-                    setMessege('')
-                    getMessges();
+            console.log(data);
+            setMessege('')
+            // getGMessges();
         })
     }
-   useEffect(()=>{
-       // let objDiv = document.getElementsByClassName("msg_card_body");
-       // objDiv.scrollTop = objDiv.scrollHeight;
-       getMessges(sessionStorage.getItem('id'),id);
-       setTitle(title);
-   },[id])
+    useEffect(()=>{
+        // let objDiv = document.getElementsByClassName("msg_card_body");
+        // objDiv.scrollTop = objDiv.scrollHeight;
+        console.log('lllllll')
+        getGMessges(id,title);
+        setTitle(title);
+    },[id])
     return(<>
         <div className="col-md-8 col-xl-6 chat" >
             <div className="card">
@@ -85,7 +86,7 @@ const  Inbox=()=>{
                                 <i className="fas fa-users" /> Add to close friends
                             </li>
                             <li>
-                              <i className="fas fa-plus" /> Add to group
+                                <i className="fas fa-plus" /> Add to group
                             </li>
                             <li>
                                 <Link to={"/us/group"} style={{color:'white'}}>  <i className="fas fa-plus" /> Create group</Link>
@@ -142,4 +143,4 @@ const  Inbox=()=>{
         </div>
     </>)
 }
-export  default  Inbox;
+export  default  Cgchat;
